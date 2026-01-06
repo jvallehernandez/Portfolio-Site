@@ -245,15 +245,15 @@ const commands = {
             <div class="output-title">Contact Information</div>
             <div class="output-item">
                 <div class="output-item-title">Email:</div>
-                <div class="output-item-detail">[Your email here]</div>
+                <div class="output-item-detail">jv464@njit.edu</div>
             </div>
             <div class="output-item">
                 <div class="output-item-title">LinkedIn:</div>
-                <div class="output-item-detail">[Your LinkedIn here]</div>
+                <div class="output-item-detail">https://www.linkedin.com/in/j-valle1017/</div>
             </div>
             <div class="output-item">
                 <div class="output-item-title">GitHub:</div>
-                <div class="output-item-detail">[Your GitHub here]</div>
+                <div class="output-item-detail">github.com/jvallehernandez</div>
             </div>
         </div>`);
     },
@@ -274,7 +274,7 @@ function processCommand(input) {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    addOutput(`<span class="prompt">visitor@portfolio:~$</span> <span class="command-echo">${trimmed}</span>`);
+    addOutput(`<span class="prompt">visitor@josevalle:portfolio ~$</span> <span class="command-echo">${trimmed}</span>`);
 
     const parts = trimmed.split(/\s+/);
     const command = parts[0].toLowerCase();
@@ -338,11 +338,43 @@ commandInput.addEventListener('input', updateCursorPosition);
 commandInput.addEventListener('keyup', updateCursorPosition);
 commandInput.addEventListener('click', updateCursorPosition);
 
-terminal.addEventListener('click', () => {
-    commandInput.focus();
+terminal.addEventListener('mousedown', (e) => {
+    if (e.target === commandInput || e.target.closest('.terminal-input-line')) {
+        return;
+    }
+    
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && !selection.getRangeAt(0).collapsed) {
+        return;
+    }
+    
+    setTimeout(() => {
+        const newSelection = window.getSelection();
+        if (newSelection.toString().trim() === '') {
+            commandInput.focus();
+        }
+    }, 0);
 });
 
 updateCursorPosition();
+
+function updateClock() {
+    const clockElement = document.getElementById('clock');
+    const now = new Date();
+    
+    const easternTime = new Date(now.toLocaleString('en-US', {
+        timeZone: 'America/New_York'
+    }));
+    
+    const hours = String(easternTime.getHours()).padStart(2, '0');
+    const minutes = String(easternTime.getMinutes()).padStart(2, '0');
+    const seconds = String(easternTime.getSeconds()).padStart(2, '0');
+    
+    clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+updateClock();
+setInterval(updateClock, 1000);
 
 setTimeout(() => {
     addOutput('<span class="output-info">Type "help" to see available commands.</span>');

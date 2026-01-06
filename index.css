@@ -68,6 +68,15 @@ body {
     text-align: center;
 }
 
+.terminal-clock {
+    color: #4ec9b0;
+    font-size: 0.85rem;
+    font-weight: bold;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    margin-left: auto;
+    padding-left: 1rem;
+}
+
 .terminal-body {
     flex: 1;
     padding: 1.5rem;
@@ -75,6 +84,10 @@ body {
     overflow-x: hidden;
     font-size: 0.95rem;
     line-height: 1.6;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
 
 .terminal-body::-webkit-scrollbar {
@@ -98,6 +111,10 @@ body {
     margin-bottom: 0.5rem;
     word-wrap: break-word;
     animation: fadeIn 0.3s ease-in;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
 
 @keyframes fadeIn {
@@ -204,7 +221,7 @@ body {
 }
 
 .output-item-detail {
-    color: #858585;
+    color: #dcdcaa;
     margin-left: 1rem;
     font-size: 0.9rem;
 }
