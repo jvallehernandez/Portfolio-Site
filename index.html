@@ -3,51 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
+    <title>Portfolio-Jose-Valle</title>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">Portfolio</div>
-            <ul class="nav-tabs">
-                <li><a href="#" class="tab-link active" data-tab="home">Home</a></li>
-                <li><a href="#" class="tab-link" data-tab="about">About</a></li>
-                <li><a href="#" class="tab-link" data-tab="projects">Projects</a></li>
-                <li><a href="#" class="tab-link" data-tab="contact">Contact</a></li>
-            </ul>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <span class="btn btn-close"></span>
+                <span class="btn btn-minimize"></span>
+                <span class="btn btn-maximize"></span>
+            </div>
+            <div class="terminal-title">portfolio-terminal</div>
         </div>
-    </nav>
-
-    <main class="main-content">
-        <section id="home" class="tab-content active">
-            <div class="content-wrapper">
-                <h1>Welcome</h1>
-                <p>Home Section</p>
+        <div class="terminal-body" id="terminal">
+            <div class="terminal-line">
+                <span class="prompt">visitor@portfolio:~$</span>
+                <span class="welcome-message">Welcome to my portfolio! Type 'help' to get started.</span>
             </div>
-        </section>
-
-        <section id="about" class="tab-content">
-            <div class="content-wrapper">
-                <h1>About</h1>
-                <p>About section</p>
-            </div>
-        </section>
-
-        <section id="projects" class="tab-content">
-            <div class="content-wrapper">
-                <h1>Projects</h1>
-                <p>Project section</p>
-            </div>
-        </section>
-
-        <section id="contact" class="tab-content">
-            <div class="content-wrapper">
-                <h1>Contact</h1>
-                <p>Contact section</p>
-            </div>
-        </section>
-    </main>
+        </div>
+        <div class="terminal-input-line">
+            <span class="prompt">visitor@portfolio:~$</span>
+            <input type="text" class="terminal-input" id="commandInput" autocomplete="off" spellcheck="false" autofocus>
+            <span class="cursor" id="cursor">█</span>
+        </div>
+    </div>
 
     <script src="index.js"></script>
 </body>
