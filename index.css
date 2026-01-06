@@ -123,8 +123,14 @@ body {
     border-top: 1px solid #3d3d3d;
 }
 
-.terminal-input {
+.input-wrapper {
+    display: flex;
+    align-items: center;
     flex: 1;
+    position: relative;
+}
+
+.terminal-input {
     background: transparent;
     border: none;
     outline: none;
@@ -132,12 +138,16 @@ body {
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
     font-size: 0.95rem;
     padding: 0;
+    width: 100%;
+    caret-color: transparent;
 }
 
 .cursor {
     color: #d4d4d4;
     animation: blink 1s infinite;
-    margin-left: 2px;
+    position: absolute;
+    left: 0;
+    pointer-events: none;
 }
 
 @keyframes blink {

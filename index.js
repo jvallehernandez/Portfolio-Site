@@ -302,6 +302,7 @@ commandInput.addEventListener('keydown', (e) => {
         if (commandHistory.length > 0) {
             historyIndex = Math.max(0, historyIndex - 1);
             commandInput.value = commandHistory[historyIndex] || '';
+            updateCursorPosition();
         }
     } else if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -312,12 +313,36 @@ commandInput.addEventListener('keydown', (e) => {
             historyIndex = commandHistory.length;
             commandInput.value = '';
         }
+        updateCursorPosition();
+    } else {
+        setTimeout(updateCursorPosition, 0);
     }
 });
+
+function updateCursorPosition() {
+    const input = commandInput;
+    const cursor = document.getElementById('cursor');
+    
+    const style = window.getComputedStyle(input);
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    context.font = `${style.fontSize} ${style.fontFamily}`;
+    
+    const text = input.value.substring(0, input.selectionStart);
+    const textWidth = context.measureText(text).width;
+    
+    cursor.style.left = textWidth + 'px';
+}
+
+commandInput.addEventListener('input', updateCursorPosition);
+commandInput.addEventListener('keyup', updateCursorPosition);
+commandInput.addEventListener('click', updateCursorPosition);
 
 terminal.addEventListener('click', () => {
     commandInput.focus();
 });
+
+updateCursorPosition();
 
 setTimeout(() => {
     addOutput('<span class="output-info">Type "help" to see available commands.</span>');
