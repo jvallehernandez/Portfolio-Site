@@ -25,6 +25,9 @@ const commands = {
             <div class="output-item">
                 My name is Jose Valle. I design and build backend systems. I care about how systems work, how data flows, and how decisions
                 can be explained by numbers rather than assumptions. I focus on building APIs, data pipelines, automation, and reliable systems that are simple, measurable, and intentional.
+                <br><br>
+                I chose a terminal style portfolio because it reflects how I learned to work with systems, through the command line, structure, and understanding what’s happening under the hood.
+                The truck animation is a small personal detail, inspired by my dad. Entering "exit" triggers a final scene that brings the experience close to home.
             </div>
         </div>`);
     },
