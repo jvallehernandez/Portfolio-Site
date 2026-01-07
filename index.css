@@ -86,6 +86,13 @@ body {
     font-size: 0.85rem;
     flex: 1;
     text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.terminal-title:hover {
+    color: #aaa;
 }
 
 .terminal-clock {
@@ -132,7 +139,6 @@ body {
 .terminal-line {
     margin-bottom: 0.5rem;
     word-wrap: break-word;
-    animation: fadeIn 0.3s ease-in;
     user-select: text;
     -webkit-user-select: text;
     -moz-user-select: text;
@@ -215,7 +221,7 @@ body {
 
 /* Command output styling */
 .output {
-    color: #d4d4d4;
+    color:  #27c93f;
     margin-left: 0;
 }
 
@@ -250,6 +256,7 @@ body {
 .output-item {
     margin: 0.5rem 0;
     padding-left: 1rem;
+    color: #d4d4d4;
 }
 
 .output-item-title {
@@ -283,7 +290,7 @@ body {
 }
 
 .command-echo {
-    color: #858585;
+    color: #27c93f;
 }
 
 .typing-animation {
@@ -372,6 +379,29 @@ body {
     .terminal-container {
         height: 100vh;
         border-radius: 0;
+    }
+
+    .terminal-header {
+        padding: 0.5rem 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .terminal-buttons {
+        gap: 0.35rem;
+    }
+
+    .btn {
+        width: 10px;
+        height: 10px;
+    }
+
+    .terminal-title {
+        font-size: 0.7rem;
+    }
+
+    .terminal-clock {
+        font-size: 0.65rem;
+        padding-left: 0.5rem;
     }
 
     .terminal-body {
