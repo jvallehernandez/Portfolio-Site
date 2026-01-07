@@ -6,6 +6,15 @@ const cursor = document.getElementById('cursor');
 let commandHistory = [];
 let historyIndex = -1;
 
+const anim = {
+    truck: {
+      rafId: null,
+      stop: null,          // function to stop loop
+      showTruck: true,   
+      mode: "drive"        // "drive" | "hidden"
+    }
+  };
+  
 const projects = {
     'aura': {
         name: 'Aura-App',
@@ -200,14 +209,33 @@ const commands = {
     },
 
     clear: () => {
+        // Clear terminal and re-add truck animation container
         terminal.innerHTML = '';
+        const truckContainer = document.createElement('div');
+        truckContainer.className = 'truck-animation-container';
+        truckContainer.id = 'truckAnimation';
+        terminal.appendChild(truckContainer);
+        startTruckAnimation();
     },
 
     exit: () => {
         addOutput('<span class="output-warning">Closing terminal...</span>');
-        setTimeout(() => {
-            addOutput('<span class="output-info">Thanks for visiting! Feel free to explore more.</span>');
-        }, 500);
+        // Set flag to stop truck animation after it completes current pass
+        anim.truck.shouldStopAfterPass = true;
+        
+        // Wait for truck to finish, then start exit story
+        function checkAndStartExit() {
+            if (anim.truck.rafId === null) {
+                // Truck animation has finished, start exit story
+                startExitStoryAnimation();
+            } else {
+                // Check again in a short while
+                setTimeout(checkAndStartExit, 50);
+            }
+        }
+        
+        // Start checking after a brief delay
+        setTimeout(checkAndStartExit, 100);
     }
 };
 
@@ -284,14 +312,13 @@ function playKeySound() {
     
     try {
         const now = ctx.currentTime;
-        const duration = 0.02; // Very short click, 20ms
+        const duration = 0.02; 
         
 
         const bufferSize = ctx.sampleRate * duration;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const output = buffer.getChannelData(0);
         
-        // Generate pink noise (more natural than white noise)
         let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
         for (let i = 0; i < bufferSize; i++) {
             const white = Math.random() * 2 - 1;
@@ -313,12 +340,10 @@ function playKeySound() {
         noiseSource.connect(noiseGain);
         noiseGain.connect(ctx.destination);
         
-        // Envelope for noise (sharp attack, quick decay)
         noiseGain.gain.setValueAtTime(0, now);
         noiseGain.gain.linearRampToValueAtTime(0.15, now + 0.001);
         noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
         
-        // Add a brief high-frequency tone for the click
         const clickOsc = ctx.createOscillator();
         const clickGain = ctx.createGain();
         clickOsc.connect(clickGain);
@@ -331,7 +356,6 @@ function playKeySound() {
         clickGain.gain.linearRampToValueAtTime(0.08, now + 0.001);
         clickGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.5);
         
-        // Start both sounds
         noiseSource.start(now);
         noiseSource.stop(now + duration);
         clickOsc.start(now);
@@ -393,7 +417,14 @@ function updateClock() {
     const minutes = String(easternTime.getMinutes()).padStart(2, '0');
     const seconds = String(easternTime.getSeconds()).padStart(2, '0');
     
-    clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+    // Get day name, day number, and month
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dayName = dayNames[easternTime.getDay()];
+    const dayNumber = easternTime.getDate();
+    const monthName = monthNames[easternTime.getMonth()];
+    
+    clockElement.textContent = `${dayName} ${monthName} ${dayNumber} ${hours}:${minutes}:${seconds} EST`;
 }
 
 updateClock();
@@ -402,6 +433,8 @@ setInterval(updateClock, 1000);
 function startTruckAnimation() {
     const container = document.getElementById("truckAnimation");
     if (!container) return;
+  
+    anim.truck.shouldStopAfterPass = false;
   
     container.innerHTML = "";
     container.style.whiteSpace = "pre";
@@ -441,8 +474,14 @@ function startTruckAnimation() {
     let lastTime = 0;
   
     function renderFrame(now) {
+      // Check if animation should be stopped
+      if (anim.truck.shouldStopAfterPass && pos > cols) {
+        anim.truck.rafId = null;
+        return; // Stop animation
+      }
+      
       if (now - lastTime < FRAME_TIME) {
-        requestAnimationFrame(renderFrame);
+        anim.truck.rafId = requestAnimationFrame(renderFrame);
         return;
       }
       lastTime = now;
@@ -473,19 +512,269 @@ function startTruckAnimation() {
   
       output.textContent = lines.join("\n");
   
-      // Movement
       pos += 1;
       roadOffset += 2;               
   
       if (pos > cols) {
+        if (anim.truck.shouldStopAfterPass) {
+          anim.truck.rafId = null;
+          return; // Stop animation
+        }
         pos = -truck[2].length;
       }
   
-      requestAnimationFrame(renderFrame);
+      anim.truck.rafId = requestAnimationFrame(renderFrame);
     }
   
-    requestAnimationFrame(renderFrame);
-  }  
+    anim.truck.rafId = requestAnimationFrame(renderFrame);
+    
+    // Store stop function
+    anim.truck.stop = function() {
+      if (anim.truck.rafId) {
+        cancelAnimationFrame(anim.truck.rafId);
+        anim.truck.rafId = null;
+      }
+    };
+  }
+
+function startExitStoryAnimation() {
+    // Create container for exit story
+    const storyContainer = document.createElement('div');
+    storyContainer.className = 'exit-story-container';
+    storyContainer.style.whiteSpace = 'pre';
+    storyContainer.style.fontFamily = 'monospace';
+    storyContainer.style.color = '#27c93f';
+    storyContainer.style.margin = '2rem 0';
+    storyContainer.style.lineHeight = '1.2';
+    terminal.appendChild(storyContainer);
+    
+    // ASCII art definitions 
+    const house = [
+        ' ____',
+        '/____\\',
+        '|[] .|',
+        "'----'"
+    ];
+    
+    const truck = [
+        "      .--.",
+        " .----'   '--.",
+        " '-()-----()-'"
+    ];
+    
+    const father = [
+        "    '_'",
+        "   /[]\\",
+        "    []",
+        "    /\\ "
+    ];
+    
+    const son = [
+        "dad! -  \\o/",
+        "         |",
+        "        / \\ "
+    ];
+    
+    const probe = document.createElement('span');
+    probe.textContent = 'M';
+    probe.style.visibility = 'hidden';
+    probe.style.position = 'absolute';
+    probe.style.fontFamily = 'monospace';
+    storyContainer.appendChild(probe);
+    const charWidth = probe.getBoundingClientRect().width || 10;
+    probe.remove();
+    
+    const cols = Math.max(80, Math.floor(storyContainer.clientWidth / charWidth) || 80);
+    
+    // Positioning: All figures align at ground level
+    const groundY = 9; // Ground level (where road is)
+    const houseX = cols - 20; // House on the right
+    const truckStopX = houseX - 45; // Truck stops here
+    const fatherX = truckStopX + 18; // Father appears next to truck (to the right of truck)
+    const sonX = houseX - 12; // Son appears next to house (to the right of house)
+    
+    const houseBaseY = groundY - house.length + 1; // House base at ground
+    const truckBaseY = groundY - truck.length + 1; // Truck base at ground (road level)
+    const fatherBaseY = groundY - father.length + 1; // Father feet at ground
+    const sonBaseY = groundY - son.length + 1; // Son feet at ground
+    
+    let truckPos = -truck[2].length;
+    let frame = 0;
+    let roadOffset = 0;
+    let stage = 'truck_arriving'; // truck_arriving, father_appearing, son_appearing, complete
+    
+    const FPS = 24;
+    const FRAME_TIME = 1000 / FPS;
+    let lastTime = 0;
+    
+    function renderStoryFrame(now) {
+        if (now - lastTime < FRAME_TIME) {
+            requestAnimationFrame(renderStoryFrame);
+            return;
+        }
+        lastTime = now;
+        
+        const lines = Array(groundY + 1).fill(' '.repeat(cols));
+        
+        let road = "";
+        for (let i = 0; i < cols; i++) {
+            road += ((i + roadOffset) % 2 === 0) ? "·" : " ";
+        }
+        lines[groundY] = road;
+        roadOffset += 2;
+        
+        // Always show house on the right
+        for (let i = 0; i < house.length; i++) {
+            const y = houseBaseY + i;
+            if (y >= 0 && y < lines.length) {
+                let line = lines[y];
+                const start = houseX;
+                const end = Math.min(cols, houseX + house[i].length);
+                if (end > start) {
+                    const slice = house[i].slice(0, end - start);
+                    line = line.slice(0, start) + slice + line.slice(end);
+                    lines[y] = line;
+                }
+            }
+        }
+        
+        // Stage 1: Truck arriving
+        if (stage === 'truck_arriving') {
+            if (truckPos < truckStopX) {
+                for (let i = 0; i < truck.length; i++) {
+                    const y = truckBaseY + i;
+                    if (y >= 0 && y < lines.length && truckPos + truck[i].length > 0) {
+                        let line = lines[y];
+                        const start = Math.max(0, truckPos);
+                        const end = Math.min(cols, truckPos + truck[i].length);
+                        if (end > start) {
+                            const sliceStart = Math.max(0, -truckPos);
+                            const slice = truck[i].slice(sliceStart, sliceStart + (end - start));
+                            line = line.slice(0, start) + slice + line.slice(end);
+                            lines[y] = line;
+                        }
+                    }
+                }
+                truckPos += 1;
+                frame++;
+            } else {
+                // Truck has arrived, move to next stage
+                stage = 'father_appearing';
+                frame = 0;
+            }
+        }
+        
+        // Stage 2: Father appearing
+        if (stage === 'father_appearing') {
+            // Keep truck at stop position
+            for (let i = 0; i < truck.length; i++) {
+                const y = truckBaseY + i;
+                if (y >= 0 && y < lines.length) {
+                    let line = lines[y];
+                    const start = truckStopX;
+                    const end = Math.min(cols, truckStopX + truck[i].length);
+                    if (end > start) {
+                        const slice = truck[i].slice(0, end - start);
+                        line = line.slice(0, start) + slice + line.slice(end);
+                        lines[y] = line;
+                    }
+                }
+            }
+            
+            // Fade in father (appear after a few frames)
+            if (frame > 10) {
+                for (let i = 0; i < father.length; i++) {
+                    const y = fatherBaseY + i;
+                    if (y >= 0 && y < lines.length) {
+                        let line = lines[y];
+                        const start = fatherX;
+                        const end = Math.min(cols, fatherX + father[i].length);
+                        if (end > start) {
+                            const slice = father[i].slice(0, end - start);
+                            line = line.slice(0, start) + slice + line.slice(end);
+                            lines[y] = line;
+                        }
+                    }
+                }
+                
+                if (frame > 30) {
+                    stage = 'son_appearing';
+                    frame = 0;
+                }
+            }
+            frame++;
+        }
+        
+        // Stage 3: Son appearing
+        if (stage === 'son_appearing') {
+            // Keep truck at stop position
+            for (let i = 0; i < truck.length; i++) {
+                const y = truckBaseY + i;
+                if (y >= 0 && y < lines.length) {
+                    let line = lines[y];
+                    const start = truckStopX;
+                    const end = Math.min(cols, truckStopX + truck[i].length);
+                    if (end > start) {
+                        const slice = truck[i].slice(0, end - start);
+                        line = line.slice(0, start) + slice + line.slice(end);
+                        lines[y] = line;
+                    }
+                }
+            }
+            
+            // Keep father visible
+            for (let i = 0; i < father.length; i++) {
+                const y = fatherBaseY + i;
+                if (y >= 0 && y < lines.length) {
+                    let line = lines[y];
+                    const start = fatherX;
+                    const end = Math.min(cols, fatherX + father[i].length);
+                    if (end > start) {
+                        const slice = father[i].slice(0, end - start);
+                        line = line.slice(0, start) + slice + line.slice(end);
+                        lines[y] = line;
+                    }
+                }
+            }
+            
+            // Fade in son next to house
+            if (frame > 10) {
+                for (let i = 0; i < son.length; i++) {
+                    const y = sonBaseY + i;
+                    if (y >= 0 && y < lines.length) {
+                        let line = lines[y];
+                        const start = sonX;
+                        const end = Math.min(cols, sonX + son[i].length);
+                        if (end > start) {
+                            const slice = son[i].slice(0, end - start);
+                            line = line.slice(0, start) + slice + line.slice(end);
+                            lines[y] = line;
+                        }
+                    }
+                }
+                
+                if (frame > 40) {
+                    stage = 'complete';
+                    setTimeout(() => {
+                        addOutput('<span class="output-info">Thanks for visiting! Feel free to explore more.</span>');
+                    }, 500);
+                    return; // Stop animation
+                }
+            }
+            frame++;
+        }
+        
+        // Render all lines
+        storyContainer.textContent = lines.join('\n');
+        
+        if (stage !== 'complete') {
+            requestAnimationFrame(renderStoryFrame);
+        }
+    }
+    
+    // Start animation
+    requestAnimationFrame(renderStoryFrame);
+}
 
 // Matrix rain background effect
 function initMatrixBackground() {
@@ -555,8 +844,82 @@ function initMatrixBackground() {
     setInterval(draw, 50);
 }
 
-setTimeout(() => {
-    addOutput('<span class="output-info">Type "help" to see available commands.</span>');
+// Boot sequence with fake Homebrew update
+async function bootSequence() {
+    commandInput.disabled = true;
+    commandInput.placeholder = 'System booting...';
+    
+    terminal.innerHTML = '';
+    
+    // Fake Homebrew update lines (10-18 lines, realistic but short)
+    const brewLines = [
+        '==> Updating Homebrew...',
+        '==> Upgrading 3 outdated packages:',
+        '  python@3.12.5 -> python@3.12.6',
+        '  node@20.11.0 -> node@20.12.0',
+        '  git@2.43.0 -> git@2.43.1',
+        '',
+        '==> Downloading python@3.12.6',
+        '######################################################################## 100.0%',
+        '==> Installing python@3.12.6',
+        '==> Downloading node@20.12.0',
+        '######################################################################## 100.0%',
+        '==> Installing node@20.12.0',
+        '==> Downloading git@2.43.1',
+        '######################################################################## 100.0%',
+        '==> Installing git@2.43.1',
+        '',
+        '==> Summary',
+        '  🍺  /opt/homebrew/Cellar/python/3.12.6',
+        '  🍺  /opt/homebrew/Cellar/node/20.12.0',
+        '  🍺  /opt/homebrew/Cellar/git/2.43.1',
+        '',
+        '==>System ready. Launching portfolio terminal...',
+    ];
+    
+    for (let i = 0; i < brewLines.length; i++) {
+        // Use faster typing for progress bars, slower for regular text
+        const isProgressBar = brewLines[i].includes('##');
+        const speed = isProgressBar ? 8 : 6; // Visible character-by-character typing
+        await typeText(brewLines[i], 'output', speed);
+        // Small delay between lines
+        await new Promise(resolve => setTimeout(resolve, 20));
+    }
+    
+    // Brief pause before transition
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Clear terminal
+    terminal.innerHTML = '';
+    
+    // Show prompt first (not typed)
+    addOutput(`<span class="prompt">guest@josevalle:portfolio ~$</span> `);
+    
+    // Type welcome message with same speed as intro (15ms per character)
+    await typeText('Welcome to my portfolio! Type \'help\' to get started.', 'output', 15);
+    
+    // Add truck animation container between welcome and help
+    const truckContainer = document.createElement('div');
+    truckContainer.className = 'truck-animation-container';
+    truckContainer.id = 'truckAnimation';
+    terminal.appendChild(truckContainer);
+    
+    // Start truck animation
     startTruckAnimation();
+    
+    // Initialize matrix background
     initMatrixBackground();
-}, 500);
+    
+    // Re-enable input and focus
+    commandInput.disabled = false;
+    commandInput.placeholder = '';
+    commandInput.focus();
+    
+    // Type help hint after a moment (after truck animation) with same speed
+    setTimeout(async () => {
+        await typeText('Type "help" to see available commands.', 'output-info', 15);
+    }, 500);
+}
+
+// Start boot sequence on page load
+bootSequence();
