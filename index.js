@@ -487,7 +487,76 @@ function startTruckAnimation() {
     requestAnimationFrame(renderFrame);
   }  
 
+// Matrix rain background effect
+function initMatrixBackground() {
+    const matrixContainer = document.getElementById('matrixBackground');
+    if (!matrixContainer) return;
+
+    // Matrix characters (mix of alphanumeric and symbols)
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+    const charArray = chars.split('');
+
+    // Get container dimensions
+    const container = document.querySelector('.terminal-container');
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+    const fontSize = 14;
+    const columns = Math.floor(width / fontSize);
+    
+    // Create columns
+    const drops = [];
+    for (let i = 0; i < columns; i++) {
+        drops[i] = Math.random() * -100; 
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    matrixContainer.appendChild(canvas);
+    
+    const ctx = canvas.getContext('2d');
+    ctx.font = `${fontSize}px monospace`;
+
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, width, height);
+
+        // Color for matrix characters
+        ctx.fillStyle = '#163f14';
+        
+        for (let i = 0; i < drops.length; i++) {
+            const text = charArray[Math.floor(Math.random() * charArray.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            
+            if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            
+            drops[i]++;
+        }
+    }
+
+    function resize() {
+        const newWidth = container.offsetWidth;
+        const newHeight = container.offsetHeight;
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        
+        const newColumns = Math.floor(newWidth / fontSize);
+        while (drops.length < newColumns) {
+            drops.push(Math.random() * -100);
+        }
+        drops.splice(newColumns);
+    }
+
+    window.addEventListener('resize', resize);
+    
+    // Start animation
+    setInterval(draw, 50);
+}
+
 setTimeout(() => {
     addOutput('<span class="output-info">Type "help" to see available commands.</span>');
     startTruckAnimation();
+    initMatrixBackground();
 }, 500);
