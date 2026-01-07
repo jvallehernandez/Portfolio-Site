@@ -91,21 +91,6 @@ const projects = {
     }
 };
 
-const skills = {
-    'Languages': ['Kotlin', 'Python', 'Java', 'C++', 'JavaScript', 'TypeScript', 'PHP', 'SQL'],
-    'Frameworks & Tools': ['Android Studio', 'MongoDB', 'MySQL', 'Git', 'Linux', 'Splunk', 'Nessus', 'Nmap', 'Wireshark'],
-    'Technologies': ['REST APIs', 'Web Scraping', 'Database Design', 'Cybersecurity', 'OSINT', 'File Processing']
-};
-
-const interests = [
-    'Mobile App Development',
-    'Cybersecurity & Ethical Hacking',
-    'Full-Stack Development',
-    'Data Engineering',
-    'System Design',
-    'Open Source Contributions'
-];
-
 function addOutput(content, className = 'output') {
     const line = document.createElement('div');
     line.className = `terminal-line ${className}`;
@@ -114,7 +99,6 @@ function addOutput(content, className = 'output') {
     terminal.scrollTop = terminal.scrollHeight;
 }
 
-// Helper function to type text with animation
 function typeText(text, className = 'output', speed = 10) {
     return new Promise((resolve) => {
         const line = document.createElement('div');
@@ -144,8 +128,6 @@ const commands = {
                 <li><span class="output-item-title">whoami</span> - Learn about me</li>
                 <li><span class="output-item-title">projects</span> - List all projects</li>
                 <li><span class="output-item-title">project [name]</span> - View detailed project info (e.g., project aura)</li>
-                <li><span class="output-item-title">skills</span> - Display technical skills</li>
-                <li><span class="output-item-title">interests</span> - Show my interests</li>
                 <li><span class="output-item-title">contact</span> - Get contact information</li>
                 <li><span class="output-item-title">clear</span> - Clear the terminal</li>
                 <li><span class="output-item-title">exit</span> - Close the terminal</li>
@@ -157,9 +139,8 @@ const commands = {
         addOutput(`<div class="output-section">
             <div class="output-title">About Me</div>
             <div class="output-item">
-                I'm a passionate developer with experience in mobile app development, cybersecurity, and full-stack engineering.<br>
-                I enjoy building practical applications and solving complex problems through code.<br>
-                Currently exploring new technologies and always eager to learn and contribute to meaningful projects.
+                My name is Jose Valle. I design and build backend systems. I care about how systems work, how data flows, and how decisions
+                can be explained by numbers rather than assumptions. I focus on building APIs, data pipelines, automation, and reliable systems that are simple, measurable, and intentional.
             </div>
         </div>`);
     },
@@ -198,46 +179,6 @@ const commands = {
         });
         projectHtml += '</div>';
         addOutput(projectHtml);
-    },
-
-    skills: () => {
-        const section = document.createElement('div');
-        section.className = 'output-section';
-        
-        const title = document.createElement('div');
-        title.className = 'output-title';
-        title.textContent = 'Technical Skills';
-        section.appendChild(title);
-        
-        Object.keys(skills).forEach(category => {
-            const categoryTitle = document.createElement('div');
-            categoryTitle.className = 'output-item-title';
-            categoryTitle.style.marginTop = '1rem';
-            categoryTitle.textContent = category + ':';
-            section.appendChild(categoryTitle);
-            
-            const grid = document.createElement('div');
-            grid.className = 'skills-grid';
-            skills[category].forEach(skill => {
-                const tag = document.createElement('span');
-                tag.className = 'skill-tag';
-                tag.textContent = skill;
-                grid.appendChild(tag);
-            });
-            section.appendChild(grid);
-        });
-        
-        terminal.appendChild(section);
-        terminal.scrollTop = terminal.scrollHeight;
-    },
-
-    interests: () => {
-        let interestsList = '<div class="output-section"><div class="output-title">Interests</div><ul class="output-list">';
-        interests.forEach(interest => {
-            interestsList += `<li>${interest}</li>`;
-        });
-        interestsList += '</ul></div>';
-        addOutput(interestsList);
     },
 
     contact: () => {
@@ -292,6 +233,8 @@ function processCommand(input) {
 }
 
 commandInput.addEventListener('keydown', (e) => {
+    const specialKeys = ['Enter', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'Escape', 'Meta', 'Control', 'Alt', 'Shift', 'CapsLock'];
+    
     if (e.key === 'Enter') {
         const command = commandInput.value;
         processCommand(command);
@@ -315,9 +258,89 @@ commandInput.addEventListener('keydown', (e) => {
         }
         updateCursorPosition();
     } else {
+        if (!specialKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+            playKeySound();
+        }
         setTimeout(updateCursorPosition, 0);
     }
 });
+
+let audioContext = null;
+
+function initAudioContext() {
+    if (!audioContext) {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Audio context not supported');
+        }
+    }
+    return audioContext;
+}
+
+function playKeySound() {
+    const ctx = initAudioContext();
+    if (!ctx) return;
+    
+    try {
+        const now = ctx.currentTime;
+        const duration = 0.02; // Very short click, 20ms
+        
+
+        const bufferSize = ctx.sampleRate * duration;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = buffer.getChannelData(0);
+        
+        // Generate pink noise (more natural than white noise)
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+            output[i] *= 0.11;
+            b6 = white * 0.115926;
+        }
+        
+
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = buffer;
+        const noiseGain = ctx.createGain();
+        noiseSource.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+        
+        // Envelope for noise (sharp attack, quick decay)
+        noiseGain.gain.setValueAtTime(0, now);
+        noiseGain.gain.linearRampToValueAtTime(0.15, now + 0.001);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        
+        // Add a brief high-frequency tone for the click
+        const clickOsc = ctx.createOscillator();
+        const clickGain = ctx.createGain();
+        clickOsc.connect(clickGain);
+        clickGain.connect(ctx.destination);
+        
+        clickOsc.frequency.value = 1200;
+        clickOsc.type = 'sine';
+        
+        clickGain.gain.setValueAtTime(0, now);
+        clickGain.gain.linearRampToValueAtTime(0.08, now + 0.001);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.5);
+        
+        // Start both sounds
+        noiseSource.start(now);
+        noiseSource.stop(now + duration);
+        clickOsc.start(now);
+        clickOsc.stop(now + duration * 0.5);
+        
+    } catch (e) {
+        console.log('Error playing key sound:', e);
+    }
+}
 
 function updateCursorPosition() {
     const input = commandInput;
@@ -376,6 +399,95 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
+function startTruckAnimation() {
+    const container = document.getElementById("truckAnimation");
+    if (!container) return;
+  
+    container.innerHTML = "";
+    container.style.whiteSpace = "pre";
+    container.style.fontFamily = "monospace";
+    container.style.overflow = "hidden";
+  
+    // ASCII truck (3 lines)
+    const truck = [
+   "      .--.",
+   " .----'   '--.",
+   " '-()-----()-'"    
+    ];
+  
+    const probe = document.createElement("span");
+    probe.textContent = "M";
+    probe.style.visibility = "hidden";
+    probe.style.position = "absolute";
+    probe.style.fontFamily = "monospace";
+    container.appendChild(probe);
+  
+    const charWidth = probe.getBoundingClientRect().width || 10;
+    probe.remove();
+  
+    const cols = Math.max(40, Math.floor(container.clientWidth / charWidth));
+  
+    const output = document.createElement("div");
+    output.className = "truck-animation";
+    output.style.whiteSpace = "pre";
+    container.appendChild(output);
+  
+    let pos = -truck[2].length;
+    let roadOffset = 0;
+  
+    // ===== SPEED CONTROL =====
+    const FPS = 24;                    // ← slow & readable
+    const FRAME_TIME = 1000 / FPS;
+    let lastTime = 0;
+  
+    function renderFrame(now) {
+      if (now - lastTime < FRAME_TIME) {
+        requestAnimationFrame(renderFrame);
+        return;
+      }
+      lastTime = now;
+  
+      // Build road (dotted lane)
+      let road = "";
+      for (let i = 0; i < cols; i++) {
+        road += ((i + roadOffset) % 2 === 0) ? "·" : " ";
+      }
+  
+      const lines = ["", "", ""];
+  
+      for (let row = 0; row < 3; row++) {
+        let base = (row === 2) ? road : " ".repeat(cols);
+  
+        const t = truck[row];
+        const start = Math.max(0, pos);
+        const end = Math.min(cols, pos + t.length);
+  
+        if (end > start) {
+          const sliceStart = Math.max(0, -pos);
+          const slice = t.slice(sliceStart, sliceStart + (end - start));
+          base = base.slice(0, start) + slice + base.slice(end);
+        }
+  
+        lines[row] = base;
+      }
+  
+      output.textContent = lines.join("\n");
+  
+      // Movement
+      pos += 1;
+      roadOffset += 2;               
+  
+      if (pos > cols) {
+        pos = -truck[2].length;
+      }
+  
+      requestAnimationFrame(renderFrame);
+    }
+  
+    requestAnimationFrame(renderFrame);
+  }  
+
 setTimeout(() => {
     addOutput('<span class="output-info">Type "help" to see available commands.</span>');
+    startTruckAnimation();
 }, 500);
