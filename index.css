@@ -117,6 +117,19 @@ body {
     -ms-user-select: text;
 }
 
+#truckAnimation {
+    white-space: pre;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+  
+  .truck-animation {
+    white-space: pre;
+    line-height: 1.2;
+    color: #4ec9b0;
+  }  
+
 @keyframes fadeIn {
     from {
         opacity: 0;
