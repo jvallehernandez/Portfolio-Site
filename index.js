@@ -151,7 +151,7 @@ const commands = {
             const project = projects[key];
             projectsList += `<li><span class="output-item-title">${project.name}</span> <span class="output-item-detail">(${project.tech}) - ${project.date}</span></li>`;
         });
-        projectsList += '</ul><div class="output-info" style="margin-top: 1rem;">Type "project [name]" to view details. Available: aura, bitfit, wordle, resume-fox, cyber, stock, weather, interpreter, bookstore</div></div>';
+        projectsList += '</ul><div class="output-info" style="margin-top: 1rem;">Type "project [name]" to view details. <br>Available: aura, bitfit, wordle, resume-fox, cyber, stock, weather, interpreter, bookstore</div></div>';
         addOutput(projectsList);
     },
 
@@ -215,7 +215,7 @@ function processCommand(input) {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    addOutput(`<span class="prompt">visitor@josevalle:portfolio ~$</span> <span class="command-echo">${trimmed}</span>`);
+    addOutput(`<span class="prompt">guest@josevalle:portfolio ~$</span> <span class="command-echo">${trimmed}</span>`);
 
     const parts = trimmed.split(/\s+/);
     const command = parts[0].toLowerCase();
