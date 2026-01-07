@@ -2,7 +2,7 @@
 
 async function bootSequence() {
     commandInput.disabled = true;
-    commandInput.placeholder = 'System booting...';
+    commandInput.placeholder = '';
     
     terminal.innerHTML = '';
     
