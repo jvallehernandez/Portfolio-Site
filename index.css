@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-    background: #1e1e1e;
+    background: #000000;
     color: #d4d4d4;
     height: 100vh;
     overflow: hidden;
@@ -20,7 +20,7 @@ body {
     width: 100%;
     max-width: 1200px;
     height: 90vh;
-    background: #1e1e1e;
+    background: #000000;
     border-radius: 8px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -69,7 +69,7 @@ body {
 }
 
 .terminal-clock {
-    color: #4ec9b0;
+    color: #27c93f;
     font-size: 0.85rem;
     font-weight: bold;
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
@@ -127,7 +127,7 @@ body {
   .truck-animation {
     white-space: pre;
     line-height: 1.2;
-    color: #4ec9b0;
+    color: #27c93f;
   }  
 
 @keyframes fadeIn {
@@ -140,7 +140,7 @@ body {
 }
 
 .prompt {
-    color: #4ec9b0;
+    color: rgb(165, 55, 165);
     font-weight: bold;
     margin-right: 0.5rem;
 }
@@ -164,7 +164,7 @@ body {
     background: transparent;
     border: none;
     outline: none;
-    color: #d4d4d4;
+    color: #27c93f;
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
     font-size: 0.95rem;
     padding: 0;
@@ -173,7 +173,7 @@ body {
 }
 
 .cursor {
-    color: #d4d4d4;
+    color: #27c93f;
     animation: blink 1s infinite;
     position: absolute;
     left: 0;
@@ -204,7 +204,7 @@ body {
 }
 
 .output-info {
-    color: #4ec9b0;
+    color: #27c93f;
 }
 
 .output-warning {
@@ -214,11 +214,11 @@ body {
 .output-section {
     margin: 1rem 0;
     padding-left: 1rem;
-    border-left: 2px solid #4ec9b0;
+    border-left: 2px solid #27c93f;
 }
 
 .output-title {
-    color: #4ec9b0;
+    color: rgb(78, 38, 255);
     font-weight: bold;
     margin-bottom: 0.5rem;
 }
@@ -255,7 +255,7 @@ body {
     content: "▸";
     position: absolute;
     left: 0;
-    color: #4ec9b0;
+    color: purple;
 }
 
 .command-echo {
@@ -264,7 +264,7 @@ body {
 
 .typing-animation {
     overflow: hidden;
-    border-right: 2px solid #4ec9b0;
+    border-right: 2px solid #27c93f;
     white-space: nowrap;
     animation: typing 0.05s steps(1, end), blink-cursor 1s step-end infinite;
 }
@@ -283,7 +283,7 @@ body {
         border-color: transparent;
     }
     50% {
-        border-color: #4ec9b0;
+        border-color: #27c93f;
     }
 }
 
@@ -291,21 +291,19 @@ body {
 .project-detail {
     margin: 1rem 0;
     padding: 1rem;
-    background: #252526;
+    background: #000000;
     border-radius: 4px;
-    border-left: 3px solid #4ec9b0;
+    border-left: 3px solid #27c93f;
 }
 
 .project-detail-title {
     color: #dcdcaa;
-    font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
 }
 
 .project-detail-tech {
     color: #858585;
-    font-size: 0.85rem;
     margin-bottom: 0.75rem;
 }
 
@@ -320,7 +318,7 @@ body {
     content: "•";
     position: absolute;
     left: 0;
-    color: #4ec9b0;
+    color: #27c93f;
 }
 
 /* Skills grid */
