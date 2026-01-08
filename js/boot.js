@@ -51,7 +51,7 @@ async function bootSequence() {
     addOutput(`<span class="prompt">guest@josevalle:portfolio ~$</span> `);
     
     // Type welcome message with same speed as intro (15ms per character)
-    await typeText('Welcome to my portfolio! Type \'help\' to get started.', 'output', 15);
+    await typeText('Welcome to my portfolio! Explore at your own pace. Thanks for taking the time to explore my work.', 'output', 15);
     
     // Add truck animation container between welcome and help
     const truckContainer = document.createElement('div');
