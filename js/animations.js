@@ -154,14 +154,33 @@ function startExitStoryAnimation() {
     const charWidth = probe.getBoundingClientRect().width || 10;
     probe.remove();
     
-    const cols = Math.max(80, Math.floor(storyContainer.clientWidth / charWidth) || 80);
+    // Calculate columns based on available width
+    // On mobile, scale down to fit viewport without scrolling
+    const isMobile = window.innerWidth <= 768;
+    const availableWidth = storyContainer.clientWidth || terminal.clientWidth || (isMobile ? window.innerWidth - 20 : 640);
+    const calculatedCols = Math.floor(availableWidth / charWidth);
+    
+    // Use calculated columns on mobile to fit screen, or minimum 80 on desktop
+    const cols = isMobile ? Math.max(50, calculatedCols - 5) : Math.max(80, calculatedCols);
     
     // Positioning: All figures align at ground level
+    // On mobile, use more compact positioning
     const groundY = 9; // Ground level (where road is)
-    const houseX = cols - 20; // House on the right
-    const truckStopX = houseX - 45; // Truck stops here
-    const fatherX = truckStopX + 18; // Father appears next to truck (to the right of truck)
-    const sonX = houseX - 12; // Son appears next to house (to the right of house)
+    
+    let houseX, truckStopX, fatherX, sonX;
+    if (isMobile) {
+        // Compact mobile layout - fit everything in available space
+        houseX = cols - 7; // House closer to right edge
+        truckStopX = Math.max(5, houseX - 55); // Truck stops closer to house
+        fatherX = truckStopX + 15; // Father closer to truck
+        sonX = houseX - 12; // Son closer to house
+    } else {
+        // Desktop layout with more spacing
+        houseX = cols - 20;
+        truckStopX = houseX - 45;
+        fatherX = truckStopX + 18;
+        sonX = houseX - 12;
+    }
     
     const houseBaseY = groundY - house.length + 1; // House base at ground
     const truckBaseY = groundY - truck.length + 1; // Truck base at ground (road level)
