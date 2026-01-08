@@ -6,6 +6,14 @@ async function bootSequence() {
     
     terminal.innerHTML = '';
     
+    // Detect mobile device for faster typing speed
+    const isMobile = window.innerWidth <= 768;
+    
+    const progressBarSpeed = isMobile ? 4 : 8;
+    const regularTextSpeed = isMobile ? 3 : 6;
+    const welcomeSpeed = isMobile ? 8 : 15;
+    const helpHintSpeed = isMobile ? 8 : 15;
+    
     // Fake Homebrew update lines (10-18 lines, realistic but short)
     const brewLines = [
         '==> Updating Homebrew...',
@@ -35,14 +43,14 @@ async function bootSequence() {
     for (let i = 0; i < brewLines.length; i++) {
         // Use faster typing for progress bars, slower for regular text
         const isProgressBar = brewLines[i].includes('##');
-        const speed = isProgressBar ? 8 : 6; // Visible character-by-character typing
+        const speed = isProgressBar ? progressBarSpeed : regularTextSpeed;
         await typeText(brewLines[i], 'output', speed);
-        // Small delay between lines
-        await new Promise(resolve => setTimeout(resolve, 20));
+
+        await new Promise(resolve => setTimeout(resolve, isMobile ? 10 : 20));
     }
     
-    // Brief pause before transition
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Brief pause before transition (shorter on mobile)
+    await new Promise(resolve => setTimeout(resolve, isMobile ? 50 : 100));
     
     // Clear terminal
     terminal.innerHTML = '';
@@ -50,8 +58,8 @@ async function bootSequence() {
     // Show prompt first (not typed)
     addOutput(`<span class="prompt">guest@josevalle:portfolio ~$</span> `);
     
-    // Type welcome message with same speed as intro (15ms per character)
-    await typeText('Welcome to my portfolio! Explore at your own pace. Thanks for taking the time to explore my work.', 'output', 15);
+    // Type welcome message with adjusted speed for mobile
+    await typeText('Welcome to my portfolio! Explore at your own pace. Thanks for taking the time to explore my work.', 'output', welcomeSpeed);
     
     // Add truck animation container between welcome and help
     const truckContainer = document.createElement('div');
@@ -70,9 +78,9 @@ async function bootSequence() {
     commandInput.placeholder = '';
     commandInput.focus();
     
-    // Type help hint after a moment (after truck animation) with same speed
+    // Type help hint after a moment (after truck animation) with adjusted speed
     setTimeout(async () => {
-        await typeText('Type "help" to see available commands.', 'output-info', 15);
-    }, 500);
+        await typeText('Type "help" to see available commands.', 'output-info', helpHintSpeed);
+    }, isMobile ? 300 : 500);
 }
 
